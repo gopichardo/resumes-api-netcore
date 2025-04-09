@@ -1,12 +1,28 @@
+using Core.Repository;
+using Core.Usecase;
+using Database;
+using Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 // Add controllers
 builder.Services.AddControllers();
+
+// Add services to the container.
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 
 builder.Services.AddCors(options => options.AddPolicy("AllowWebApp", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// Entity Framework
+builder.Services.AddDbContext<ResumeDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ResumesDB"))
+);
 
 var app = builder.Build();
 
