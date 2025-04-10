@@ -9,5 +9,6 @@ namespace Core.Repository
     public interface IUserRepository
     {
         Task InsertUser(User user);
+        Task<User> GetUser(Guid id);
     }
 }

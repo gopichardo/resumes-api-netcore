@@ -1,5 +1,5 @@
 using Core.Repository;
-using Core.Usecase;
+using Core.Usecase.Users;
 using Database;
 using Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +11,7 @@ builder.Services.AddControllers();
 // Add services to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
+builder.Services.AddScoped<IGetUserUseCase, GetUserCase>();
 
 builder.Services.AddCors(options => options.AddPolicy("AllowWebApp", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 

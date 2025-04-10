@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Core.Entity;
 using Core.Repository;
 
-namespace Core.Usecase
+namespace Core.Usecase.Users
 {
     public interface ICreateUserUseCase
     {

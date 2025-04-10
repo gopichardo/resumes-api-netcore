@@ -1,5 +1,6 @@
+using System.Threading.Tasks;
 using Api.User.Dtos;
-using Core.Usecase;
+using Core.Usecase.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.User
@@ -9,10 +10,12 @@ namespace Api.User
     public class UserController : ControllerBase
     {
         private readonly ICreateUserUseCase _createUserUseCase;
+        private readonly IGetUserUseCase _getUserUseCase;
 
-        public UserController(ICreateUserUseCase createUserUseCase)
+        public UserController(ICreateUserUseCase createUserUseCase, IGetUserUseCase getUserUseCase)
         {
             _createUserUseCase = createUserUseCase;
+            _getUserUseCase = getUserUseCase;
         }
 
         [HttpPost]
@@ -36,8 +39,16 @@ namespace Api.User
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetUser([FromQueryAttribute] Guid id)
+        public async Task<IActionResult> GetUser([FromQueryAttribute] Guid id)
         {
+
+            if (id == Guid.Empty)
+            {
+                return BadRequest("Invalid user ID.");
+            }
+
+            await _getUserUseCase.QueryAsync(id);
+
             return Ok($"Get user with id: {id}");
         }
 

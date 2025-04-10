@@ -18,5 +18,12 @@ namespace Infrastructure.Repository
             _context.User.Add(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<User> GetUser(Guid id)
+        {
+           var user = await _context.User.FindAsync(id);
+
+           return user ?? throw new Exception("User not found");
+        }
     }
 }
