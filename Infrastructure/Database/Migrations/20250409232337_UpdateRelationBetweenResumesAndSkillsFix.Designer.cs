@@ -4,6 +4,7 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database.Migrations
 {
     [DbContext(typeof(ResumeDbContext))]
-    partial class ResumeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250409232337_UpdateRelationBetweenResumesAndSkillsFix")]
+    partial class UpdateRelationBetweenResumesAndSkillsFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,31 @@ namespace Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Core.Entity.Proffesion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ResumeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResumeId");
+
+                    b.ToTable("Proffesion");
+                });
 
             modelBuilder.Entity("Core.Entity.Resume", b =>
                 {
@@ -69,7 +97,12 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ProffesionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProffesionId");
 
                     b.ToTable("Skill");
                 });
@@ -92,6 +125,13 @@ namespace Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Core.Entity.Proffesion", b =>
+                {
+                    b.HasOne("Core.Entity.Resume", null)
+                        .WithMany("Professions")
+                        .HasForeignKey("ResumeId");
                 });
 
             modelBuilder.Entity("Core.Entity.Resume", b =>
@@ -124,8 +164,22 @@ namespace Database.Migrations
                     b.Navigation("Skill");
                 });
 
+            modelBuilder.Entity("Core.Entity.Skill", b =>
+                {
+                    b.HasOne("Core.Entity.Proffesion", null)
+                        .WithMany("Skills")
+                        .HasForeignKey("ProffesionId");
+                });
+
+            modelBuilder.Entity("Core.Entity.Proffesion", b =>
+                {
+                    b.Navigation("Skills");
+                });
+
             modelBuilder.Entity("Core.Entity.Resume", b =>
                 {
+                    b.Navigation("Professions");
+
                     b.Navigation("ResumeSkills");
                 });
 

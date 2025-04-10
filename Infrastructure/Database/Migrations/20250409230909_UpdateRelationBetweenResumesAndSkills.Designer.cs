@@ -4,6 +4,7 @@ using Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database.Migrations
 {
     [DbContext(typeof(ResumeDbContext))]
-    partial class ResumeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250409230909_UpdateRelationBetweenResumesAndSkills")]
+    partial class UpdateRelationBetweenResumesAndSkills
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,31 @@ namespace Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Core.Entity.Proffesion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ResumeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResumeId");
+
+                    b.ToTable("Proffesion");
+                });
 
             modelBuilder.Entity("Core.Entity.Resume", b =>
                 {
@@ -69,7 +97,17 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ProffesionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ResumeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProffesionId");
+
+                    b.HasIndex("ResumeId");
 
                     b.ToTable("Skill");
                 });
@@ -94,6 +132,13 @@ namespace Database.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("Core.Entity.Proffesion", b =>
+                {
+                    b.HasOne("Core.Entity.Resume", null)
+                        .WithMany("Professions")
+                        .HasForeignKey("ResumeId");
+                });
+
             modelBuilder.Entity("Core.Entity.Resume", b =>
                 {
                     b.HasOne("Core.Entity.User", "User")
@@ -108,13 +153,13 @@ namespace Database.Migrations
             modelBuilder.Entity("Core.Entity.ResumeSkill", b =>
                 {
                     b.HasOne("Core.Entity.Resume", "Resume")
-                        .WithMany("ResumeSkills")
+                        .WithMany("SkillLink")
                         .HasForeignKey("ResumeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Core.Entity.Skill", "Skill")
-                        .WithMany("ResumeSkills")
+                        .WithMany("ResumeLink")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -124,14 +169,34 @@ namespace Database.Migrations
                     b.Navigation("Skill");
                 });
 
+            modelBuilder.Entity("Core.Entity.Skill", b =>
+                {
+                    b.HasOne("Core.Entity.Proffesion", null)
+                        .WithMany("Skills")
+                        .HasForeignKey("ProffesionId");
+
+                    b.HasOne("Core.Entity.Resume", null)
+                        .WithMany("MainSkills")
+                        .HasForeignKey("ResumeId");
+                });
+
+            modelBuilder.Entity("Core.Entity.Proffesion", b =>
+                {
+                    b.Navigation("Skills");
+                });
+
             modelBuilder.Entity("Core.Entity.Resume", b =>
                 {
-                    b.Navigation("ResumeSkills");
+                    b.Navigation("MainSkills");
+
+                    b.Navigation("Professions");
+
+                    b.Navigation("SkillLink");
                 });
 
             modelBuilder.Entity("Core.Entity.Skill", b =>
                 {
-                    b.Navigation("ResumeSkills");
+                    b.Navigation("ResumeLink");
                 });
 #pragma warning restore 612, 618
         }

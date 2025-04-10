@@ -15,7 +15,8 @@ namespace Infrastructure.Repository
 
         public async Task InsertUser(User user)
         {
-            await _context.User.AddAsync(user);
+            _context.User.Add(user);
+            await _context.SaveChangesAsync();
         }
     }
 }
