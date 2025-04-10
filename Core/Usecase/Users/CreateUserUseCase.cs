@@ -19,6 +19,11 @@ namespace Core.Usecase.Users
         {
             try
             {
+                if (user == null)
+                {
+                    throw new ArgumentNullException(nameof(user), "User cannot be null");
+                }
+
                 await _userRepository.InsertUser(user);
             }
             catch (System.Exception)
