@@ -4,11 +4,11 @@ using Core.Repository;
 
 namespace Core.Usecase.Users
 {
-    public class GetUserCase : IGetUserUseCase
+    public class QueryUserCase : IQueryUserUseCase
     {
         private readonly IUserRepository _userRepository;
 
-        public GetUserCase(IUserRepository userRepository)
+        public QueryUserCase(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }

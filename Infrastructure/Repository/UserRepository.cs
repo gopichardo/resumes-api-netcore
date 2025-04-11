@@ -2,6 +2,7 @@
 using Core.Entity;
 using Core.Repository;
 using Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
@@ -33,12 +34,12 @@ namespace Infrastructure.Repository
 
             var user = await _context.User.FindAsync(id);
 
-            if (user == null)
-            {
-                throw new KeyNotFoundException($"User with ID {id} was not found.");
-            }
-
             return user;
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.User.ToListAsync();
         }
     }
 }

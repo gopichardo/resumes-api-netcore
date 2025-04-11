@@ -10,12 +10,14 @@ namespace Api.User
     public class UserController : ControllerBase
     {
         private readonly ICreateUserUseCase _createUserUseCase;
-        private readonly IGetUserUseCase _getUserUseCase;
+        private readonly IQueryUserUseCase _getUserUseCase;
+        private readonly IQueryAllUsersUseCase _queryAllUsersUseCase;
 
-        public UserController(ICreateUserUseCase createUserUseCase, IGetUserUseCase getUserUseCase)
+        public UserController(ICreateUserUseCase createUserUseCase, IQueryUserUseCase getUserUseCase, IQueryAllUsersUseCase queryAllUsersUseCase)
         {
             _createUserUseCase = createUserUseCase;
             _getUserUseCase = getUserUseCase;
+            _queryAllUsersUseCase = queryAllUsersUseCase;
         }
 
         [HttpPost]
@@ -39,7 +41,7 @@ namespace Api.User
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser([FromQueryAttribute] Guid id)
+        public async Task<IActionResult> GetUser([FromRoute] Guid id)
         {
 
             if (id == Guid.Empty)
@@ -47,15 +49,22 @@ namespace Api.User
                 return BadRequest("Invalid user ID.");
             }
 
-            await _getUserUseCase.QueryAsync(id);
+            var user = await _getUserUseCase.QueryAsync(id);
 
-            return Ok($"Get user with id: {id}");
+            if (user == null)
+            {
+                return NotFound($"User with ID {id} was not found.");
+            }
+
+            return Ok(user);
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok("Get all users");
+            var users = _queryAllUsersUseCase.QueryAllAsync().Result;
+
+            return Ok(users);
         }
 
     }

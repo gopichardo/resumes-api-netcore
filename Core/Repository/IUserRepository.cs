@@ -10,5 +10,6 @@ namespace Core.Repository
     {
         Task InsertUser(User user);
         Task<User> GetUser(Guid id);
+        Task<IEnumerable<User>> GetAllUsersAsync();
     }
 }

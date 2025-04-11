@@ -11,7 +11,8 @@ builder.Services.AddControllers();
 // Add services to the container.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
-builder.Services.AddScoped<IGetUserUseCase, GetUserCase>();
+builder.Services.AddScoped<IQueryUserUseCase, QueryUserCase>();
+builder.Services.AddScoped<IQueryAllUsersUseCase, QueryAllUsersUseCase>();
 
 builder.Services.AddCors(options => options.AddPolicy("AllowWebApp", builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
